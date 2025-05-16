@@ -1,2 +1,2 @@
 <h1>ISBN validator</h1>
-C++ code that can validate ISBN-10 and ISBN-13
+C++ kód, který validuje ISBN-10 a ISBN-13

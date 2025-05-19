@@ -53,14 +53,33 @@ bool Kniha::setAuthor(const string &author) {
     return false;
 }
 
-//nastavi isbn
+bool Kniha::setKniha(const string& isbn, const string& title, const string& author)
+{
+    if (!setIsbn(isbn) | !setTitle(title) | !setAuthor(author)) {
+        return false;
+    }
+    this->isbn = isbn;
+    this->title = title;
+    this->author = author;
+    return true;
+}
+
+//nastaví isbn
 bool Kniha::setIsbn(const string &isbn) {
     if(isbn.length() == ISBN_10 + 3){
         this->isbn = isbn;
+        if (!isbnValidation()) {
+            this->isbn = "";
+            return false;
+        }
         return true;
     }
     if(isbn.length() == ISBN_13 + 4){
         this->isbn = isbn;
+        if (!isbnValidation()) {
+            this->isbn = "";
+            return false;
+        }
         return true;
     }
     return false;
@@ -79,14 +98,14 @@ Kniha::~Kniha()
 {
 }
 
-//ziska prefix z isbn pokud je to ISBN-13
+//Získa prefix z isbn pokud je to ISBN-13
 string Kniha::getPrefix() const {
     std::vector<string> parts = splitIsbn(this->isbn);
     return parts[0];
 }
 
 
-//odstrani pomlcky nebo mezery v isbn
+//Odstraní pomlčky nebo mezery v isbn
 string Kniha::getIsbnNum() const {
     string isbnNum = this->isbn;
     if(this->isbn.length() == ISBN_10+3){
@@ -108,6 +127,7 @@ string Kniha::getIsbnNum() const {
     return isbnNum;
 }
 
+/*Vrací část isbn s regionem*/
 string Kniha::getRegion() const {
     std::vector<string> parts = splitIsbn(this->isbn);
     string isbnNum = getIsbnNum();
@@ -119,6 +139,7 @@ string Kniha::getRegion() const {
     }
 }
 
+/*Vrací část isbn s vydavatelem*/
 string Kniha::getVydavatel() const {
     std::vector<string> parts = splitIsbn(this->isbn);
     string isbnNum = getIsbnNum();
@@ -130,6 +151,7 @@ string Kniha::getVydavatel() const {
     }
 }
 
+/*Vrací část isbn s číslem vydání*/
 string Kniha::getVydani() const {
     std::vector<string> parts = splitIsbn(this->isbn);
     string isbnNum = getIsbnNum();
@@ -141,7 +163,7 @@ string Kniha::getVydani() const {
     }
 }
 
-
+/*Metoda pro validaci ISBN pomocí regulárních výrazů*/
 bool Kniha::isbnValidation() {
     string raw = getIsbnNum();
     string isbn= this->isbn;
@@ -182,6 +204,7 @@ bool Kniha::isbnValidation() {
     return false;
 }
 
+/*Switch vrací region slovy podle přiděleného čísla jazyku nebo regionu*/
 string Kniha::regionSlovy() const {
     string regionS = getRegion();
     int region = stoi(regionS);
@@ -217,6 +240,7 @@ string Kniha::regionSlovy() const {
     return nazevR;
 }
 
+/*přetížení operátoru výpisu << */
 std::ostream &operator<<(std::ostream &os, const Kniha &k){
     os << "ISBN: " << k.getIsbn();
     if(k.isbn.length() == ISBN_13+4){
@@ -228,7 +252,7 @@ std::ostream &operator<<(std::ostream &os, const Kniha &k){
     return os;
 }
 
-std::vector<string> splitIsbn(const string &isbn){
+std::vector<string> splitIsbn(const string& isbn) {
     std::vector<std::string> parts;
     string cleaned;
 
@@ -236,20 +260,27 @@ std::vector<string> splitIsbn(const string &isbn){
     for (char c : isbn) {
         if (c == ' ' || c == '-') {
             cleaned += '-';
-        } else {
+        }
+        else {
             cleaned += c;
         }
     }
+}
 
-    std::stringstream ss(cleaned);
-    string part;
-
-    while (std::getline(ss, part, '-')) {
-        if (!part.empty()) {
-            parts.push_back(part);
-        }
+/*přetížení operátoru = (přiřazování)*/
+Kniha& Kniha::operator=(const Kniha& k) {
+    // kontrola totožnosti objektu
+    if (this != &k) {
+        setKniha(k.getIsbn(), k.getTitle(), k.getAuthor());
     }
+    return *this;
+}
 
-    return parts;
-
+/*přetížení operátoru == (porovnání)*/
+bool Kniha::operator==(const Kniha &k) const
+{
+    if (this->isbn == k.isbn && this->title == k.title && this->author == k.author) {
+        return true;
+    }
+    return false;
 }

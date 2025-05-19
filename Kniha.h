@@ -11,7 +11,7 @@ using std::string;
 #define MAXSTRING 150
 #define ISBN_10 10
 #define ISBN_13 13
-#define X 10
+//#define X 10
 
 class Kniha {
 public:
@@ -24,17 +24,19 @@ public:
     bool setIsbn(const string&);
     bool setTitle(const string&);
     bool setAuthor(const string&);
+    bool setKniha(const string&, const string&, const string&);
 
     string getPrefix()const;
     string getRegion()const;
     string getVydavatel()const;
     string getVydani()const;
     string getIsbnNum()const;
-    //int getIsbnLenght()const;
     bool isbnValidation();
     string regionSlovy()const;
     friend std::ostream& operator<<(std::ostream& os, const Kniha& k);
     friend std::vector<string> splitIsbn (const string &);
+    Kniha& operator =(const Kniha&);
+    bool operator ==(const Kniha&)const;
 
 private:
     string isbn;
